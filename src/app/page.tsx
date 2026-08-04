@@ -80,11 +80,14 @@ export default function Home() {
 
   return (
     <div className="app-container">
-      {/* App Navigation */}
+      {/* App Navigation Header */}
       <header className="app-header">
         <div className="brand-logo">
           <div className="brand-icon">💡</div>
-          <span>My100Ideas</span>
+          <span>
+            <span className="brand-title-blue">My100</span>
+            <span className="brand-title-gold">Ideas</span>
+          </span>
         </div>
         <div className="header-actions">
           <a
@@ -93,10 +96,10 @@ export default function Home() {
             rel="noopener noreferrer"
             className="github-btn"
           >
-            <svg className="w-4 h-4" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
             </svg>
-            <span>GitHub Repository</span>
+            <span>GitHub 倉庫</span>
           </a>
         </div>
       </header>
@@ -106,7 +109,10 @@ export default function Home() {
         <div className="hero-badge">
           <span>✨ 靈感博物館 & 點子檔案庫</span>
         </div>
-        <h1 className="hero-title">讓每一個想法，都留下它的人生。</h1>
+        <h1 className="hero-title">
+          讓每一個想法，<br />
+          <span className="hero-title-gradient">都留下它的人生。</span>
+        </h1>
         <p className="hero-subtitle">
           記錄曾經想到、正在實現，以及因為拖延而錯過的創意與故事。即使未曾實現，也是思想閃耀過的軌跡。
         </p>
@@ -121,6 +127,7 @@ export default function Home() {
               {stats.all} / 100 Ideas Recorded
             </div>
           </div>
+
           <div className="matrix-grid">
             {matrixSlots.map((slot) => {
               const activeClass = slot.idea
@@ -142,26 +149,26 @@ export default function Home() {
             })}
           </div>
 
-          {/* Quick Stat Cards */}
+          {/* Quick Stat Cards (Blue, Gold, Red Palette) */}
           <div className="stats-grid">
             <div className="stat-card">
-              <div className="stat-val text-amber-400">{stats.idea + stats.recorded}</div>
+              <div className="stat-val stat-val-gold">{stats.idea + stats.recorded}</div>
               <div className="stat-lbl">💡 想法紀錄</div>
             </div>
             <div className="stat-card">
-              <div className="stat-val text-cyan-400">{stats["not-implemented"]}</div>
+              <div className="stat-val stat-val-slate">{stats["not-implemented"]}</div>
               <div className="stat-lbl">⏳ 尚未實作</div>
             </div>
             <div className="stat-card">
-              <div className="stat-val text-purple-400">{stats["in-progress"]}</div>
+              <div className="stat-val stat-val-blue">{stats["in-progress"]}</div>
               <div className="stat-lbl">🚀 熱血進行中</div>
             </div>
             <div className="stat-card">
-              <div className="stat-val text-emerald-400">{stats.completed}</div>
+              <div className="stat-val stat-val-emerald">{stats.completed}</div>
               <div className="stat-lbl">✅ 完美實現</div>
             </div>
             <div className="stat-card">
-              <div className="stat-val text-rose-400">{stats.missed}</div>
+              <div className="stat-val stat-val-red">{stats.missed}</div>
               <div className="stat-lbl">🪦 錯過的遺憾</div>
             </div>
           </div>
@@ -190,7 +197,7 @@ export default function Home() {
               全部 ({stats.all})
             </button>
             <button
-              className={`filter-tab ${selectedStatus === "recorded" ? "active" : ""}`}
+              className={`filter-tab tab-gold ${selectedStatus === "recorded" ? "active" : ""}`}
               onClick={() => setSelectedStatus("recorded")}
             >
               📝 已記錄 ({stats.recorded})
@@ -214,7 +221,7 @@ export default function Home() {
               ✅ 已完成 ({stats.completed})
             </button>
             <button
-              className={`filter-tab ${selectedStatus === "missed" ? "active" : ""}`}
+              className={`filter-tab tab-red ${selectedStatus === "missed" ? "active" : ""}`}
               onClick={() => setSelectedStatus("missed")}
             >
               🪦 錯過 ({stats.missed})
@@ -255,15 +262,13 @@ export default function Home() {
           {filteredIdeas.map((idea) => (
             <div
               key={idea.id}
-              className="idea-card"
+              className={`idea-card card-${idea.status}`}
               onClick={() => setActiveIdea(idea)}
             >
               <div>
                 <div className="card-top">
                   <span className="idea-id-badge mono">{idea.id}</span>
-                  <span
-                    className={`status-pill ${statusClasses[idea.status]}`}
-                  >
+                  <span className={`status-pill ${statusClasses[idea.status]}`}>
                     <span className="status-dot" />
                     {statusLabels[idea.status]}
                   </span>
@@ -293,16 +298,16 @@ export default function Home() {
       ) : viewMode === "timeline" ? (
         <div className="timeline-wrap">
           {filteredIdeas.map((idea) => (
-            <div key={idea.id} className="timeline-item">
+            <div key={idea.id} className={`timeline-item item-${idea.status}`}>
               <div className="timeline-dot" />
               <div
-                className="idea-card"
+                className={`idea-card card-${idea.status}`}
                 onClick={() => setActiveIdea(idea)}
               >
                 <div className="card-top">
                   <span className="idea-id-badge mono">{idea.id}</span>
-                  <span className="conceived-time" style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
-                    🗓️ 想到時間：{idea.conceivedAt}
+                  <span className="conceived-time" style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                    🗓️ 構思時間：{idea.conceivedAt}
                   </span>
                   <span className={`status-pill ${statusClasses[idea.status]}`}>
                     <span className="status-dot" />
@@ -340,16 +345,16 @@ export default function Home() {
             <tbody>
               {filteredIdeas.map((idea) => (
                 <tr key={idea.id}>
-                  <td className="mono" style={{ color: "#818cf8", fontWeight: "bold" }}>
+                  <td className="mono" style={{ color: "#2563eb", fontWeight: "bold" }}>
                     {idea.id}
                   </td>
-                  <td style={{ fontWeight: "700", color: "white" }}>{idea.title}</td>
+                  <td style={{ fontWeight: "700", color: "#0f172a" }}>{idea.title}</td>
                   <td>
                     <span className={`status-pill ${statusClasses[idea.status]}`}>
                       {statusLabels[idea.status]}
                     </span>
                   </td>
-                  <td style={{ color: "#94a3b8", maxWidth: "300px" }}>{idea.summary}</td>
+                  <td style={{ color: "#475569", maxWidth: "300px" }}>{idea.summary}</td>
                   <td>
                     <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
                       {idea.categories.map((c, i) => (
@@ -365,13 +370,14 @@ export default function Home() {
                     <button
                       onClick={() => setActiveIdea(idea)}
                       style={{
-                        background: "rgba(99,102,241,0.15)",
-                        border: "1px solid rgba(99,102,241,0.3)",
-                        color: "#a5b4fc",
-                        padding: "4px 10px",
+                        background: "#eff6ff",
+                        border: "1px solid #bfdbfe",
+                        color: "#2563eb",
+                        padding: "4px 12px",
                         borderRadius: "6px",
                         cursor: "pointer",
                         fontSize: "0.8rem",
+                        fontWeight: "600",
                       }}
                     >
                       詳情
@@ -387,10 +393,7 @@ export default function Home() {
       {/* Idea Detail Modal */}
       {activeIdea && (
         <div className="modal-overlay" onClick={() => setActiveIdea(null)}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button
               className="modal-close"
               onClick={() => setActiveIdea(null)}
@@ -410,11 +413,11 @@ export default function Home() {
               </span>
             </div>
 
-            <h2 style={{ fontSize: "1.8rem", fontWeight: "900", color: "white", marginBottom: "12px" }}>
+            <h2 style={{ fontSize: "1.8rem", fontWeight: "900", color: "#0f172a", marginBottom: "12px" }}>
               {activeIdea.title}
             </h2>
 
-            <p style={{ fontSize: "1.05rem", color: "#94a3b8", lineHeight: "1.6", marginBottom: "20px" }}>
+            <p style={{ fontSize: "1.05rem", color: "#475569", lineHeight: "1.65", marginBottom: "20px" }}>
               {activeIdea.summary}
             </p>
 
@@ -466,11 +469,13 @@ export default function Home() {
             {activeIdea.outcome && (
               <>
                 <div className="modal-section-title">📖 後續發展與回顧故事 (Outcome)</div>
-                <div className="outcome-callout">{activeIdea.outcome}</div>
+                <div className={activeIdea.status === "missed" ? "outcome-callout" : "outcome-callout outcome-callout-gold"}>
+                  {activeIdea.outcome}
+                </div>
               </>
             )}
 
-            <div style={{ marginTop: "32px", textAlign: "right", fontSize: "0.8rem", color: "#64748b" }}>
+            <div style={{ marginTop: "32px", textAlign: "right", fontSize: "0.8rem", color: "#94a3b8" }}>
               記錄日期：{activeIdea.recordedAt}
             </div>
           </div>
