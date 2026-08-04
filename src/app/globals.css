@@ -51,28 +51,80 @@ h2 { font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1; }
   line-height: 1.55;
 }
 
-.status {
+.ideas {
   border-top: 1px solid var(--line);
   padding-top: 32px;
+}
+
+.section-heading {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
 }
 
-ol { margin: 0; padding: 0; list-style: none; }
-
-li {
-  border-bottom: 1px solid var(--line);
-  padding: 16px 0;
-  display: flex;
-  gap: 20px;
-  font-size: 1rem;
+.table-wrap {
+  margin-top: 40px;
+  border: 1px solid var(--line);
+  overflow-x: auto;
 }
 
-li span { color: var(--accent); font-size: 0.75rem; font-weight: 800; }
+table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+th,
+td {
+  padding: 18px 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th:last-child,
+td:last-child { border-right: 0; }
+
+tbody tr:last-child td { border-bottom: 0; }
+
+th {
+  color: var(--muted);
+  background: rgba(23, 32, 25, 0.06);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+td { font-size: 0.95rem; line-height: 1.55; }
+
+.idea-id {
+  color: var(--accent);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.idea-title { min-width: 180px; font-weight: 800; }
+
+.idea-summary {
+  min-width: 320px;
+  color: var(--muted);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
 
 @media (max-width: 700px) {
   main { padding: 28px 0; gap: 64px; }
   .hero { padding-top: 6vh; }
-  .status { grid-template-columns: 1fr; }
+  .section-heading { grid-template-columns: 1fr; gap: 8px; }
 }
