@@ -7,5 +7,7 @@ export interface Idea {
   process: string[];
   benefits: string[];
   categories: string[];
+  conceivedAt: string;
+  outcome: string;
   recordedAt: string;
 }
