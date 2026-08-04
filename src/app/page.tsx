@@ -1,69 +1,486 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import ideasData from "@/data/ideas.json";
 import type { Idea } from "@/types/idea";
 
 const ideas = ideasData as Idea[];
 
 const statusLabels: Record<Idea["status"], string> = {
-  idea: "想法",
-  recorded: "已記錄",
-  "not-implemented": "尚未實作",
-  "in-progress": "進行中",
-  completed: "已完成",
-  missed: "已錯過",
+  idea: "💡 想法",
+  recorded: "📝 已記錄",
+  "not-implemented": "⏳ 尚未實作",
+  "in-progress": "🚀 進行中",
+  completed: "✅ 已完成",
+  missed: "🪦 錯過遺憾",
+};
+
+const statusClasses: Record<Idea["status"], string> = {
+  idea: "status-idea",
+  recorded: "status-recorded",
+  "not-implemented": "status-not-implemented",
+  "in-progress": "status-in-progress",
+  completed: "status-completed",
+  missed: "status-missed",
 };
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "timeline" | "table">("grid");
+  const [activeIdea, setActiveIdea] = useState<Idea | null>(null);
+
+  // Status Counts
+  const stats = useMemo(() => {
+    const counts = {
+      all: ideas.length,
+      idea: 0,
+      recorded: 0,
+      "not-implemented": 0,
+      "in-progress": 0,
+      completed: 0,
+      missed: 0,
+    };
+    ideas.forEach((item) => {
+      if (counts[item.status] !== undefined) {
+        counts[item.status]++;
+      }
+    });
+    return counts;
+  }, []);
+
+  // Filtered Ideas
+  const filteredIdeas = useMemo(() => {
+    return ideas.filter((idea) => {
+      const matchesStatus =
+        selectedStatus === "all" || idea.status === selectedStatus;
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        idea.title.toLowerCase().includes(q) ||
+        idea.summary.toLowerCase().includes(q) ||
+        idea.problem.toLowerCase().includes(q) ||
+        idea.categories.some((c) => c.toLowerCase().includes(q));
+      return matchesStatus && matchesSearch;
+    });
+  }, [searchQuery, selectedStatus]);
+
+  // Generate 100 slots matrix
+  const matrixSlots = useMemo(() => {
+    const slots = [];
+    for (let i = 0; i < 100; i++) {
+      const idea = ideas[i];
+      slots.push({
+        index: i + 1,
+        idea: idea || null,
+      });
+    }
+    return slots;
+  }, []);
+
   return (
-    <main>
-      <section className="hero">
-        <p className="eyebrow">MY100IDEAS</p>
-        <h1>讓每一個想法，都留下它的人生。</h1>
-        <p className="intro">
-          記錄曾經想到、正在實現，以及因為拖延而錯過的創意。
+    <div className="app-container">
+      {/* App Navigation */}
+      <header className="app-header">
+        <div className="brand-logo">
+          <div className="brand-icon">💡</div>
+          <span>My100Ideas</span>
+        </div>
+        <div className="header-actions">
+          <a
+            href="https://github.com/stevebobobo/My100Ideas"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="github-btn"
+          >
+            <svg className="w-4 h-4" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+            <span>GitHub Repository</span>
+          </a>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-badge">
+          <span>✨ 靈感博物館 & 點子檔案庫</span>
+        </div>
+        <h1 className="hero-title">讓每一個想法，都留下它的人生。</h1>
+        <p className="hero-subtitle">
+          記錄曾經想到、正在實現，以及因為拖延而錯過的創意與故事。即使未曾實現，也是思想閃耀過的軌跡。
         </p>
+
+        {/* 100 Ideas Visual Matrix */}
+        <div className="matrix-container">
+          <div className="matrix-header">
+            <div className="matrix-title">
+              <span>🎯 100 創意解鎖進度矩陣</span>
+            </div>
+            <div className="matrix-count mono">
+              {stats.all} / 100 Ideas Recorded
+            </div>
+          </div>
+          <div className="matrix-grid">
+            {matrixSlots.map((slot) => {
+              const activeClass = slot.idea
+                ? `active-${slot.idea.status}`
+                : "";
+              return (
+                <div
+                  key={slot.index}
+                  className={`matrix-dot ${activeClass}`}
+                  title={
+                    slot.idea
+                      ? `#${slot.idea.id}: ${slot.idea.title} (${statusLabels[slot.idea.status]})`
+                      : `Slot #${slot.index} (待解鎖)`
+                  }
+                  onClick={() => slot.idea && setActiveIdea(slot.idea)}
+                  style={{ cursor: slot.idea ? "pointer" : "default" }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Quick Stat Cards */}
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-val text-amber-400">{stats.idea + stats.recorded}</div>
+              <div className="stat-lbl">💡 想法紀錄</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val text-cyan-400">{stats["not-implemented"]}</div>
+              <div className="stat-lbl">⏳ 尚未實作</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val text-purple-400">{stats["in-progress"]}</div>
+              <div className="stat-lbl">🚀 熱血進行中</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val text-emerald-400">{stats.completed}</div>
+              <div className="stat-lbl">✅ 完美實現</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val text-rose-400">{stats.missed}</div>
+              <div className="stat-lbl">🪦 錯過的遺憾</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="ideas" aria-labelledby="ideas-title">
-        <div className="section-heading">
-          <p className="eyebrow">IDEAS</p>
-          <h2 id="ideas-title">創意紀錄</h2>
+      {/* Control Bar: Search & Filters */}
+      <section className="controls-bar">
+        <div className="search-input-wrap">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="搜尋創意名稱、痛點、結果或關鍵字..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
-        <div className="table-wrap">
-          <table>
+        <div className="filter-row">
+          <div className="filter-tabs">
+            <button
+              className={`filter-tab ${selectedStatus === "all" ? "active" : ""}`}
+              onClick={() => setSelectedStatus("all")}
+            >
+              全部 ({stats.all})
+            </button>
+            <button
+              className={`filter-tab ${selectedStatus === "recorded" ? "active" : ""}`}
+              onClick={() => setSelectedStatus("recorded")}
+            >
+              📝 已記錄 ({stats.recorded})
+            </button>
+            <button
+              className={`filter-tab ${selectedStatus === "not-implemented" ? "active" : ""}`}
+              onClick={() => setSelectedStatus("not-implemented")}
+            >
+              ⏳ 尚未實作 ({stats["not-implemented"]})
+            </button>
+            <button
+              className={`filter-tab ${selectedStatus === "in-progress" ? "active" : ""}`}
+              onClick={() => setSelectedStatus("in-progress")}
+            >
+              🚀 進行中 ({stats["in-progress"]})
+            </button>
+            <button
+              className={`filter-tab ${selectedStatus === "completed" ? "active" : ""}`}
+              onClick={() => setSelectedStatus("completed")}
+            >
+              ✅ 已完成 ({stats.completed})
+            </button>
+            <button
+              className={`filter-tab ${selectedStatus === "missed" ? "active" : ""}`}
+              onClick={() => setSelectedStatus("missed")}
+            >
+              🪦 錯過 ({stats.missed})
+            </button>
+          </div>
+
+          <div className="view-switchers">
+            <button
+              className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
+            >
+              🎴 卡片
+            </button>
+            <button
+              className={`view-btn ${viewMode === "timeline" ? "active" : ""}`}
+              onClick={() => setViewMode("timeline")}
+            >
+              ⏳ 時間軸
+            </button>
+            <button
+              className={`view-btn ${viewMode === "table" ? "active" : ""}`}
+              onClick={() => setViewMode("table")}
+            >
+              📊 數據表
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Content Section */}
+      {filteredIdeas.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "64px 0", color: "#64748b" }}>
+          <p style={{ fontSize: "1.2rem", marginBottom: "8px" }}>🔍 找不到符合條件的靈感</p>
+          <p style={{ fontSize: "0.9rem" }}>嘗試調整關鍵字或重設篩選條件</p>
+        </div>
+      ) : viewMode === "grid" ? (
+        <div className="ideas-grid">
+          {filteredIdeas.map((idea) => (
+            <div
+              key={idea.id}
+              className="idea-card"
+              onClick={() => setActiveIdea(idea)}
+            >
+              <div>
+                <div className="card-top">
+                  <span className="idea-id-badge mono">{idea.id}</span>
+                  <span
+                    className={`status-pill ${statusClasses[idea.status]}`}
+                  >
+                    <span className="status-dot" />
+                    {statusLabels[idea.status]}
+                  </span>
+                </div>
+
+                <h3 className="card-title">{idea.title}</h3>
+                <p className="card-summary">{idea.summary}</p>
+
+                <div className="card-tags">
+                  {idea.categories.map((cat, idx) => (
+                    <span key={idx} className="tag-pill">
+                      #{cat}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card-footer">
+                <div className="conceived-time">
+                  <span>🗓️ {idea.conceivedAt}</span>
+                </div>
+                <span className="action-link">解構內容 →</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : viewMode === "timeline" ? (
+        <div className="timeline-wrap">
+          {filteredIdeas.map((idea) => (
+            <div key={idea.id} className="timeline-item">
+              <div className="timeline-dot" />
+              <div
+                className="idea-card"
+                onClick={() => setActiveIdea(idea)}
+              >
+                <div className="card-top">
+                  <span className="idea-id-badge mono">{idea.id}</span>
+                  <span className="conceived-time" style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
+                    🗓️ 想到時間：{idea.conceivedAt}
+                  </span>
+                  <span className={`status-pill ${statusClasses[idea.status]}`}>
+                    <span className="status-dot" />
+                    {statusLabels[idea.status]}
+                  </span>
+                </div>
+                <h3 className="card-title">{idea.title}</h3>
+                <p className="card-summary">{idea.summary}</p>
+                <div className="card-tags">
+                  {idea.categories.map((cat, idx) => (
+                    <span key={idx} className="tag-pill">
+                      #{cat}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="table-container">
+          <table className="styled-table">
             <thead>
               <tr>
-                <th scope="col">編號</th>
-                <th scope="col">創意名稱</th>
-                <th scope="col">狀態</th>
-                <th scope="col">摘要</th>
-                <th scope="col">分類</th>
-                <th scope="col">想到時間</th>
-                <th scope="col">後續結果</th>
-                <th scope="col">記錄日期</th>
+                <th>編號</th>
+                <th>創意名稱</th>
+                <th>狀態</th>
+                <th>摘要說明</th>
+                <th>分類標籤</th>
+                <th>構思時間</th>
+                <th>記錄日期</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              {ideas.map((idea) => (
+              {filteredIdeas.map((idea) => (
                 <tr key={idea.id}>
-                  <td className="idea-id">{idea.id}</td>
-                  <td className="idea-title">{idea.title}</td>
-                  <td>
-                    <span className="status-badge">{statusLabels[idea.status]}</span>
+                  <td className="mono" style={{ color: "#818cf8", fontWeight: "bold" }}>
+                    {idea.id}
                   </td>
-                  <td className="idea-summary">{idea.summary}</td>
-                  <td>{idea.categories.join("、")}</td>
-                  <td>{idea.conceivedAt}</td>
-                  <td className="idea-outcome">{idea.outcome}</td>
+                  <td style={{ fontWeight: "700", color: "white" }}>{idea.title}</td>
                   <td>
-                    <time dateTime={idea.recordedAt}>{idea.recordedAt}</time>
+                    <span className={`status-pill ${statusClasses[idea.status]}`}>
+                      {statusLabels[idea.status]}
+                    </span>
+                  </td>
+                  <td style={{ color: "#94a3b8", maxWidth: "300px" }}>{idea.summary}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                      {idea.categories.map((c, i) => (
+                        <span key={i} className="tag-pill">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td style={{ color: "#64748b", whiteSpace: "nowrap" }}>{idea.conceivedAt}</td>
+                  <td style={{ color: "#64748b", whiteSpace: "nowrap" }}>{idea.recordedAt}</td>
+                  <td>
+                    <button
+                      onClick={() => setActiveIdea(idea)}
+                      style={{
+                        background: "rgba(99,102,241,0.15)",
+                        border: "1px solid rgba(99,102,241,0.3)",
+                        color: "#a5b4fc",
+                        padding: "4px 10px",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      詳情
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </section>
-    </main>
+      )}
+
+      {/* Idea Detail Modal */}
+      {activeIdea && (
+        <div className="modal-overlay" onClick={() => setActiveIdea(null)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={() => setActiveIdea(null)}
+              title="關閉"
+            >
+              ✕
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+              <span className="idea-id-badge mono">{activeIdea.id}</span>
+              <span className={`status-pill ${statusClasses[activeIdea.status]}`}>
+                <span className="status-dot" />
+                {statusLabels[activeIdea.status]}
+              </span>
+              <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                🗓️ {activeIdea.conceivedAt}
+              </span>
+            </div>
+
+            <h2 style={{ fontSize: "1.8rem", fontWeight: "900", color: "white", marginBottom: "12px" }}>
+              {activeIdea.title}
+            </h2>
+
+            <p style={{ fontSize: "1.05rem", color: "#94a3b8", lineHeight: "1.6", marginBottom: "20px" }}>
+              {activeIdea.summary}
+            </p>
+
+            <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
+              {activeIdea.categories.map((c, i) => (
+                <span key={i} className="tag-pill" style={{ fontSize: "0.8rem", padding: "4px 10px" }}>
+                  #{c}
+                </span>
+              ))}
+            </div>
+
+            {/* Problem Section */}
+            {activeIdea.problem && (
+              <>
+                <div className="modal-section-title">📌 面臨問題與痛點 (Problem)</div>
+                <div className="modal-box">{activeIdea.problem}</div>
+              </>
+            )}
+
+            {/* Process Section */}
+            {activeIdea.process && activeIdea.process.length > 0 && (
+              <>
+                <div className="modal-section-title">⚡ 運作與實作流程 (Process)</div>
+                <div className="modal-box">
+                  <ol className="process-list">
+                    {activeIdea.process.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+              </>
+            )}
+
+            {/* Benefits Section */}
+            {activeIdea.benefits && activeIdea.benefits.length > 0 && (
+              <>
+                <div className="modal-section-title">🎁 預期效益 (Benefits)</div>
+                <div className="modal-box">
+                  <ul className="benefit-list">
+                    {activeIdea.benefits.map((benefit, idx) => (
+                      <li key={idx}>{benefit}</li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+
+            {/* Outcome Section */}
+            {activeIdea.outcome && (
+              <>
+                <div className="modal-section-title">📖 後續發展與回顧故事 (Outcome)</div>
+                <div className="outcome-callout">{activeIdea.outcome}</div>
+              </>
+            )}
+
+            <div style={{ marginTop: "32px", textAlign: "right", fontSize: "0.8rem", color: "#64748b" }}>
+              記錄日期：{activeIdea.recordedAt}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <p>My100Ideas · 讓每一個想法，都留下它的人生。</p>
+      </footer>
+    </div>
   );
 }
