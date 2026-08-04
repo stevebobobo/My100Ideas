@@ -6,6 +6,7 @@ const ideas = ideasData as Idea[];
 const statusLabels: Record<Idea["status"], string> = {
   idea: "想法",
   recorded: "已記錄",
+  "not-implemented": "尚未實作",
   "in-progress": "進行中",
   completed: "已完成",
   missed: "已錯過",
@@ -37,6 +38,8 @@ export default function Home() {
                 <th scope="col">狀態</th>
                 <th scope="col">摘要</th>
                 <th scope="col">分類</th>
+                <th scope="col">想到時間</th>
+                <th scope="col">後續結果</th>
                 <th scope="col">記錄日期</th>
               </tr>
             </thead>
@@ -50,6 +53,8 @@ export default function Home() {
                   </td>
                   <td className="idea-summary">{idea.summary}</td>
                   <td>{idea.categories.join("、")}</td>
+                  <td>{idea.conceivedAt}</td>
+                  <td className="idea-outcome">{idea.outcome}</td>
                   <td>
                     <time dateTime={idea.recordedAt}>{idea.recordedAt}</time>
                   </td>

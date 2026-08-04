@@ -112,6 +112,8 @@ td { font-size: 0.95rem; line-height: 1.55; }
   color: var(--muted);
 }
 
+.idea-outcome { min-width: 320px; }
+
 .status-badge {
   display: inline-block;
   padding: 5px 9px;
