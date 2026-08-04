@@ -28,22 +28,36 @@ export default function Home() {
           <h2 id="ideas-title">創意紀錄</h2>
         </div>
 
-        {ideas.map((idea) => (
-          <article className="idea-card" key={idea.id}>
-            <div className="idea-meta">
-              <span>{idea.id}</span>
-              <span>{statusLabels[idea.status]}</span>
-              <time dateTime={idea.recordedAt}>{idea.recordedAt}</time>
-            </div>
-            <h3>{idea.title}</h3>
-            <p>{idea.summary}</p>
-            <div className="tags">
-              {idea.categories.map((category) => (
-                <span key={category}>{category}</span>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">編號</th>
+                <th scope="col">創意名稱</th>
+                <th scope="col">狀態</th>
+                <th scope="col">摘要</th>
+                <th scope="col">分類</th>
+                <th scope="col">記錄日期</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ideas.map((idea) => (
+                <tr key={idea.id}>
+                  <td className="idea-id">{idea.id}</td>
+                  <td className="idea-title">{idea.title}</td>
+                  <td>
+                    <span className="status-badge">{statusLabels[idea.status]}</span>
+                  </td>
+                  <td className="idea-summary">{idea.summary}</td>
+                  <td>{idea.categories.join("、")}</td>
+                  <td>
+                    <time dateTime={idea.recordedAt}>{idea.recordedAt}</time>
+                  </td>
+                </tr>
               ))}
-            </div>
-          </article>
-        ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   );
