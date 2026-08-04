@@ -6,6 +6,7 @@ const ideas = ideasData as Idea[];
 const statusLabels: Record<Idea["status"], string> = {
   idea: "想法",
   recorded: "已記錄",
+  "not-implemented": "尚未實作",
   "in-progress": "進行中",
   completed: "已完成",
   missed: "已錯過",

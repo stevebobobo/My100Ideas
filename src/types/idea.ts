@@ -1,7 +1,7 @@
 export interface Idea {
   id: string;
   title: string;
-  status: "idea" | "recorded" | "in-progress" | "completed" | "missed";
+  status: "idea" | "recorded" | "not-implemented" | "in-progress" | "completed" | "missed";
   summary: string;
   problem: string;
   process: string[];
