@@ -300,7 +300,8 @@
     ],
     "categories": ["AI", "聊天機器人", "APP", "情緒宣洩", "情緒陪伴", "語音互動"],
     "conceivedAt": "2026-08-11",
-    "outcome": "🎉 初版實作已完成！已成功開發並上線「Apology AI — 高情商道歉大師」，支援 Google Gemini API 實時 AI 生成、多風格文案、語音輸入 (STT)、卡片語音朗讀 (TTS) 與人聲對戲演練模式 (Voice Role-Play)。(線上體驗：https://stevebobobo.github.io/apology-ai/)",
+    "outcome": "🎉 初版實作已完成！已成功開發並上線「Apology AI — 高情商道歉大師」，支援 Google Gemini API 實時 AI 生成、多風格文案、語音輸入 (STT)、卡片語音朗讀 (TTS) 與人聲對戲演練模式 (Voice Role-Play)。",
+    "demoUrl": "https://stevebobobo.github.io/apology-ai/",
     "recordedAt": "2026-08-11"
   },
   {

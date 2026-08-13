@@ -286,7 +286,27 @@ export default function Home() {
                 <div className="conceived-time">
                   <span>🗓️ {idea.conceivedAt}</span>
                 </div>
-                <span className="action-link">解構內容 →</span>
+                {idea.demoUrl ? (
+                  <a
+                    href={idea.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      fontSize: "0.82rem",
+                      fontWeight: "700",
+                      color: "#10b981",
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px"
+                    }}
+                  >
+                    🔗 線上實作 ↗
+                  </a>
+                ) : (
+                  <span className="action-link">解構內容 →</span>
+                )}
               </div>
             </div>
           ))}
@@ -469,6 +489,31 @@ export default function Home() {
                   {activeIdea.outcome}
                 </div>
               </>
+            )}
+
+            {activeIdea.demoUrl && (
+              <div style={{ marginTop: "20px" }}>
+                <a
+                  href={activeIdea.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "12px 24px",
+                    borderRadius: "14px",
+                    background: "linear-gradient(135deg, #10b981, #059669)",
+                    color: "#ffffff",
+                    fontWeight: "700",
+                    fontSize: "0.95rem",
+                    textDecoration: "none",
+                    boxShadow: "0 4px 16px rgba(16, 185, 129, 0.3)"
+                  }}
+                >
+                  <span>🚀 前往專案線上實作頁面 (Apology AI) ↗</span>
+                </a>
+              </div>
             )}
 
             <div style={{ marginTop: "32px", textAlign: "right", fontSize: "0.8rem", color: "#94a3b8" }}>

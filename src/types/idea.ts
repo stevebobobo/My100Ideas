@@ -10,4 +10,5 @@ export interface Idea {
   conceivedAt: string;
   outcome: string;
   recordedAt: string;
+  demoUrl?: string;
 }
