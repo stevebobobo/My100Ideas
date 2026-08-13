@@ -388,7 +388,7 @@
     ],
     "categories": ["AI", "語音導讀", "心靈陪伴", "宗教修行", "APP", "播放控制", "故事領讀"],
     "conceivedAt": "2026-08-13",
-    "outcome": "待實作",
+    "outcome": "待實作。開發平台建議：UI/內容導向原型優先選 Lovable；需真正串接 TTS 與播放邏輯建議用 Replit（彈性高，可接第三方語音 API）；Base44 適合快速出 MVP 但客製彈性較低。TTS API 比較：Azure TTS（SSML 支援最完整，含 mstts 命名空間可微調停頓與語氣，400+ 聲線，適合誦經/禱告的精準停頓節奏）；ElevenLabs（情感表現力強，Text to Dialogue 可混合多語音，適合床邊故事敘事，但成本較高）；Google Cloud TTS（SSML 完整、語言覆蓋廣）。建議誦經/禱告模式用 Azure，故事模式用 ElevenLabs，雙引擎並存。",
     "recordedAt": "2026-08-13"
   },
   {
