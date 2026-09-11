@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ideasData from "@/data/ideas.json";
 import type { Idea } from "@/types/idea";
 
@@ -30,6 +30,22 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<"grid" | "timeline" | "table">("grid");
   const [activeIdea, setActiveIdea] = useState<Idea | null>(null);
 
+    // 雙模式主題切換 (預設亮色系)
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("my100ideas_theme") as "light" | "dark" | null;
+    const initialTheme = saved || "light";
+    setTheme(initialTheme);
+    document.documentElement.setAttribute("data-theme", initialTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    localStorage.setItem("my100ideas_theme", nextTheme);
+  };
   // Status Counts
   const stats = useMemo(() => {
     const counts = {
@@ -89,7 +105,17 @@ export default function Home() {
             <span className="brand-title-gold">Ideas</span>
           </span>
         </div>
-        <div className="header-actions">
+                <div className="header-actions">
+          {/* 主題切換按鈕 */}
+          <button
+            type="button"
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === "light" ? "切換為暗黑模式" : "切換為明亮模式"}
+          >
+            <span>{theme === "light" ? "🌙 暗色" : "☀️ 亮色"}</span>
+          </button>
+
           <a
             href="https://stevebobobo.github.io/ksuleo/"
             className="github-btn"
