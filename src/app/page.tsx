@@ -24,9 +24,29 @@ const statusClasses: Record<Idea["status"], string> = {
   missed: "status-missed",
 };
 
+const DOMAIN_CATEGORIES = [
+  { id: "all", label: "🌐 全部領域", keywords: [] },
+  { id: "traffic", label: "🚗 智慧交通", keywords: ["交通", "行車", "單車", "自行車", "方向燈", "汽機車", "車用"] },
+  { id: "maker", label: "📱 舊物創客", keywords: ["舊手機", "舊物", "隨身電腦", "嵌入式", "網路測試", "硬體", "迷你電腦"] },
+  { id: "ai", label: "🤖 AI 智慧應用", keywords: ["AI", "Bot", "機器人", "智慧"] },
+  { id: "saas", label: "💼 企業與醫療 SaaS", keywords: ["企業", "薪資", "特休", "排班", "掛號", "對帳", "金流", "醫療", "診所", "病房", "HR", "假別"] },
+  { id: "life", label: "🏠 生活機構發明", keywords: ["雨衣", "雨具", "吸塵器", "清潔", "打蛋", "照明", "發光", "餐具", "包包", "馬達", "生活", "機構", "洗潔槍"] },
+  { id: "music", label: "🎵 音樂文化跨界", keywords: ["音樂", "台語", "和弦", "Mashup", "串燒", "歌曲"] },
+];
+
+function getYouTubeEmbedUrl(url?: string): string | null {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11
+    ? `https://www.youtube.com/embed/${match[2]}`
+    : null;
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "timeline" | "table">("grid");
   const [activeIdea, setActiveIdea] = useState<Idea | null>(null);
 
@@ -65,11 +85,30 @@ export default function Home() {
     return counts;
   }, []);
 
+  // Category Counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: ideas.length };
+    DOMAIN_CATEGORIES.forEach((cat) => {
+      if (cat.id === "all") return;
+      counts[cat.id] = ideas.filter((idea) =>
+        idea.categories.some((c) => cat.keywords.some((kw) => c.includes(kw))) ||
+        cat.keywords.some((kw) => idea.title.includes(kw))
+      ).length;
+    });
+    return counts;
+  }, []);
+
   // Filtered Ideas
   const filteredIdeas = useMemo(() => {
+    const activeCat = DOMAIN_CATEGORIES.find((c) => c.id === selectedCategory);
     return ideas.filter((idea) => {
       const matchesStatus =
         selectedStatus === "all" || idea.status === selectedStatus;
+      const matchesCategory =
+        !activeCat ||
+        activeCat.id === "all" ||
+        idea.categories.some((c) => activeCat.keywords.some((kw) => c.includes(kw))) ||
+        activeCat.keywords.some((kw) => idea.title.includes(kw));
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -77,9 +116,9 @@ export default function Home() {
         idea.summary.toLowerCase().includes(q) ||
         idea.problem.toLowerCase().includes(q) ||
         idea.categories.some((c) => c.toLowerCase().includes(q));
-      return matchesStatus && matchesSearch;
+      return matchesStatus && matchesCategory && matchesSearch;
     });
-  }, [searchQuery, selectedStatus]);
+  }, [searchQuery, selectedStatus, selectedCategory]);
 
   // Generate 100 slots matrix
   const matrixSlots = useMemo(() => {
@@ -208,6 +247,25 @@ export default function Home() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Domain Category Filter Tabs */}
+        <div className="category-bar">
+          <div className="category-tabs">
+            {DOMAIN_CATEGORIES.map((cat) => {
+              const count = categoryCounts[cat.id] || 0;
+              if (cat.id !== "all" && count === 0) return null;
+              return (
+                <button
+                  key={cat.id}
+                  className={`category-tab ${selectedCategory === cat.id ? "active" : ""}`}
+                  onClick={() => setSelectedCategory(cat.id)}
+                >
+                  {cat.label} <span className="cat-count">({count})</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="filter-row">
@@ -517,27 +575,64 @@ export default function Home() {
               </>
             )}
 
+            {/* Video Section */}
+            {activeIdea.videoUrl && (
+              <div style={{ marginTop: "24px" }}>
+                <div className="modal-section-title">🎬 展示影片與實機操作 (Video Demo)</div>
+                {getYouTubeEmbedUrl(activeIdea.videoUrl) ? (
+                  <div className="modal-video-wrap">
+                    <iframe
+                      src={getYouTubeEmbedUrl(activeIdea.videoUrl)!}
+                      title={activeIdea.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <div style={{ marginTop: "8px" }}>
+                    <a
+                      href={activeIdea.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="media-link-btn"
+                    >
+                      <span>▶️ 點此觀看實機展示影片 ↗</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Attachments Section */}
+            {activeIdea.attachments && activeIdea.attachments.length > 0 && (
+              <div style={{ marginTop: "24px" }}>
+                <div className="modal-section-title">📎 相關附件與專案檔案 (Attachments)</div>
+                <div className="modal-attachments-list">
+                  {activeIdea.attachments.map((att, idx) => (
+                    <a
+                      key={idx}
+                      href={att.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="attachment-btn"
+                    >
+                      <span>{att.name} ↗</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* External Demo URL Section */}
             {activeIdea.demoUrl && (
-              <div style={{ marginTop: "20px" }}>
+              <div style={{ marginTop: "24px" }}>
                 <a
                   href={activeIdea.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "12px 24px",
-                    borderRadius: "14px",
-                    background: "linear-gradient(135deg, #10b981, #059669)",
-                    color: "#ffffff",
-                    fontWeight: "700",
-                    fontSize: "0.95rem",
-                    textDecoration: "none",
-                    boxShadow: "0 4px 16px rgba(16, 185, 129, 0.3)"
-                  }}
+                  className="demo-link-btn"
                 >
-                  <span>🚀 前往專案線上實作頁面 (Apology AI) ↗</span>
+                  <span>🚀 前往專案線上實作頁面 ↗</span>
                 </a>
               </div>
             )}

@@ -1,3 +1,8 @@
+export interface IdeaAttachment {
+  name: string;
+  url: string;
+}
+
 export interface Idea {
   id: string;
   title: string;
@@ -11,4 +16,7 @@ export interface Idea {
   outcome: string;
   recordedAt: string;
   demoUrl?: string;
+  videoUrl?: string;
+  attachments?: IdeaAttachment[];
 }
+
