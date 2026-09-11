@@ -134,6 +134,76 @@ a {
 }
 
 /* ==========================================================================
+   Vector Icon System (Linear / Crisp SVG)
+   ========================================================================== */
+.ui-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease, color 0.25s ease;
+}
+
+.ui-icon svg {
+  display: block;
+}
+
+.ui-icon-gold {
+  color: var(--color-gold);
+  filter: drop-shadow(0 0 6px rgba(217, 119, 6, 0.2));
+}
+[data-theme="dark"] .ui-icon-gold {
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.45));
+}
+
+.ui-icon-blue {
+  color: var(--color-blue);
+  filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.2));
+}
+[data-theme="dark"] .ui-icon-blue {
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.45));
+}
+
+.ui-icon-emerald {
+  color: var(--color-emerald);
+  filter: drop-shadow(0 0 6px rgba(5, 150, 105, 0.2));
+}
+[data-theme="dark"] .ui-icon-emerald {
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.45));
+}
+
+.ui-icon-red {
+  color: var(--color-red);
+  filter: drop-shadow(0 0 6px rgba(220, 38, 38, 0.2));
+}
+[data-theme="dark"] .ui-icon-red {
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.45));
+}
+
+.ui-icon-purple {
+  color: var(--color-purple);
+  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.2));
+}
+[data-theme="dark"] .ui-icon-purple {
+  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.45));
+}
+
+.ui-icon-slate {
+  color: var(--color-slate);
+}
+
+/* Icon micro-interactions on hover */
+button:hover .ui-icon,
+.category-tab:hover .ui-icon,
+.stat-card:hover .ui-icon,
+.theme-toggle-btn:hover .ui-icon,
+.filter-tab:hover .ui-icon,
+.view-btn:hover .ui-icon {
+  transform: scale(1.15);
+}
+
+/* ==========================================================================
    Header & Theme Toggle Button
    ========================================================================== */
 .app-header {
@@ -416,6 +486,9 @@ a {
   color: var(--text-muted);
   font-weight: 700;
   letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ==========================================================================
@@ -439,7 +512,10 @@ a {
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .search-input {
@@ -532,6 +608,9 @@ a {
 }
 
 .filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 18px;
   border-radius: 9999px;
   font-size: 0.85rem;
@@ -580,6 +659,9 @@ a {
 }
 
 .view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 14px;
   border-radius: 10px;
   font-size: 0.82rem;

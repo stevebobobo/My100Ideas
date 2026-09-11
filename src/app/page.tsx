@@ -3,17 +3,65 @@
 import { useState, useMemo, useEffect } from "react";
 import ideasData from "@/data/ideas.json";
 import type { Idea } from "@/types/idea";
+import {
+  TargetIcon,
+  LightbulbIcon,
+  RecordedIcon,
+  HourglassIcon,
+  RocketIcon,
+  CheckCircleIcon,
+  MonumentIcon,
+  SearchIcon,
+  SparklesIcon,
+  GlobeIcon,
+  CarIcon,
+  CpuIcon,
+  BotIcon,
+  BriefcaseIcon,
+  WrenchIcon,
+  MusicIcon,
+  GridIcon,
+  TimelineIcon,
+  TableIcon,
+  CalendarIcon,
+  VideoIcon,
+  PaperclipIcon,
+  PinIcon,
+  ZapIcon,
+  GiftIcon,
+  BookOpenIcon,
+  SunIcon,
+  MoonIcon,
+  ArrowUpRightIcon,
+} from "@/components/Icons";
 
 const ideas = ideasData as Idea[];
 
-const statusLabels: Record<Idea["status"], string> = {
-  idea: "💡 想法",
-  recorded: "📝 已記錄",
-  "not-implemented": "⏳ 尚未實作",
-  "in-progress": "🚀 進行中",
-  completed: "✅ 已完成",
-  missed: "🪦 錯過遺憾",
+const statusPlainLabels: Record<Idea["status"], string> = {
+  idea: "想法",
+  recorded: "已記錄",
+  "not-implemented": "尚未實作",
+  "in-progress": "進行中",
+  completed: "已完成",
+  missed: "錯過遺憾",
 };
+
+function StatusIcon({ status, size = 14 }: { status: Idea["status"]; size?: number }) {
+  switch (status) {
+    case "idea":
+      return <LightbulbIcon size={size} />;
+    case "recorded":
+      return <RecordedIcon size={size} />;
+    case "not-implemented":
+      return <HourglassIcon size={size} />;
+    case "in-progress":
+      return <RocketIcon size={size} />;
+    case "completed":
+      return <CheckCircleIcon size={size} />;
+    case "missed":
+      return <MonumentIcon size={size} />;
+  }
+}
 
 const statusClasses: Record<Idea["status"], string> = {
   idea: "status-idea",
@@ -25,13 +73,13 @@ const statusClasses: Record<Idea["status"], string> = {
 };
 
 const DOMAIN_CATEGORIES = [
-  { id: "all", label: "🌐 全部領域", keywords: [] },
-  { id: "traffic", label: "🚗 智慧交通", keywords: ["交通", "行車", "單車", "自行車", "方向燈", "汽機車", "車用"] },
-  { id: "maker", label: "📱 舊物創客", keywords: ["舊手機", "舊物", "隨身電腦", "嵌入式", "網路測試", "硬體", "迷你電腦"] },
-  { id: "ai", label: "🤖 AI 智慧應用", keywords: ["AI", "Bot", "機器人", "智慧"] },
-  { id: "saas", label: "💼 企業與醫療 SaaS", keywords: ["企業", "薪資", "特休", "排班", "掛號", "對帳", "金流", "醫療", "診所", "病房", "HR", "假別"] },
-  { id: "life", label: "🏠 生活機構發明", keywords: ["雨衣", "雨具", "吸塵器", "清潔", "打蛋", "照明", "發光", "餐具", "包包", "馬達", "生活", "機構", "洗潔槍"] },
-  { id: "music", label: "🎵 音樂文化跨界", keywords: ["音樂", "台語", "和弦", "Mashup", "串燒", "歌曲"] },
+  { id: "all", label: "全部領域", icon: GlobeIcon, keywords: [] },
+  { id: "traffic", label: "智慧交通", icon: CarIcon, keywords: ["交通", "行車", "單車", "自行車", "方向燈", "汽機車", "車用"] },
+  { id: "maker", label: "舊物創客", icon: CpuIcon, keywords: ["舊手機", "舊物", "隨身電腦", "嵌入式", "網路測試", "硬體", "迷你電腦"] },
+  { id: "ai", label: "AI 智慧應用", icon: BotIcon, keywords: ["AI", "Bot", "機器人", "智慧"] },
+  { id: "saas", label: "企業與醫療 SaaS", icon: BriefcaseIcon, keywords: ["企業", "薪資", "特休", "排班", "掛號", "對帳", "金流", "醫療", "診所", "病房", "HR", "假別"] },
+  { id: "life", label: "生活機構發明", icon: WrenchIcon, keywords: ["雨衣", "雨具", "吸塵器", "清潔", "打蛋", "照明", "發光", "餐具", "包包", "馬達", "生活", "機構", "洗潔槍"] },
+  { id: "music", label: "音樂文化跨界", icon: MusicIcon, keywords: ["音樂", "台語", "和弦", "Mashup", "串燒", "歌曲"] },
 ];
 
 function getYouTubeEmbedUrl(url?: string): string | null {
@@ -50,7 +98,7 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<"grid" | "timeline" | "table">("grid");
   const [activeIdea, setActiveIdea] = useState<Idea | null>(null);
 
-    // 雙模式主題切換 (預設亮色系)
+  // 雙模式主題切換 (預設亮色系)
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
@@ -66,6 +114,7 @@ export default function Home() {
     document.documentElement.setAttribute("data-theme", nextTheme);
     localStorage.setItem("my100ideas_theme", nextTheme);
   };
+
   // Status Counts
   const stats = useMemo(() => {
     const counts = {
@@ -138,13 +187,16 @@ export default function Home() {
       {/* App Navigation Header */}
       <header className="app-header">
         <div className="brand-logo">
-          <div className="brand-icon">💡</div>
+          <div className="brand-icon">
+            <LightbulbIcon size={20} className="ui-icon-gold" />
+          </div>
           <span>
             <span className="brand-title-blue">My100</span>
             <span className="brand-title-gold">Ideas</span>
           </span>
         </div>
-                <div className="header-actions">
+
+        <div className="header-actions">
           {/* 主題切換按鈕 */}
           <button
             type="button"
@@ -152,7 +204,17 @@ export default function Home() {
             onClick={toggleTheme}
             title={theme === "light" ? "切換為暗黑模式" : "切換為明亮模式"}
           >
-            <span>{theme === "light" ? "🌙 暗色" : "☀️ 亮色"}</span>
+            {theme === "light" ? (
+              <>
+                <MoonIcon size={15} />
+                <span>暗色</span>
+              </>
+            ) : (
+              <>
+                <SunIcon size={15} className="ui-icon-gold" />
+                <span>亮色</span>
+              </>
+            )}
           </button>
 
           <a
@@ -168,7 +230,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-badge">
-          <span>✨ 靈感博物館 & 點子檔案庫</span>
+          <SparklesIcon size={15} className="ui-icon-gold" />
+          <span>靈感博物館 & 點子檔案庫</span>
         </div>
         <h1 className="hero-title">
           讓每一個想法，<br />
@@ -182,7 +245,8 @@ export default function Home() {
         <div className="matrix-container">
           <div className="matrix-header">
             <div className="matrix-title">
-              <span>🎯 100 創意解鎖進度矩陣</span>
+              <TargetIcon size={20} className="ui-icon-gold" />
+              <span>100 創意解鎖進度矩陣</span>
             </div>
             <div className="matrix-count mono">
               {stats.all} / 100 Ideas Recorded
@@ -200,7 +264,7 @@ export default function Home() {
                   className={`matrix-dot ${activeClass}`}
                   title={
                     slot.idea
-                      ? `#${slot.idea.id}: ${slot.idea.title} (${statusLabels[slot.idea.status]})`
+                      ? `#${slot.idea.id}: ${slot.idea.title} (${statusPlainLabels[slot.idea.status]})`
                       : `Slot #${slot.index} (待解鎖)`
                   }
                   onClick={() => slot.idea && setActiveIdea(slot.idea)}
@@ -214,23 +278,33 @@ export default function Home() {
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-val stat-val-gold">{stats.idea + stats.recorded}</div>
-              <div className="stat-lbl">💡 想法紀錄</div>
+              <div className="stat-lbl">
+                <LightbulbIcon size={15} className="ui-icon-gold" /> 想法紀錄
+              </div>
             </div>
             <div className="stat-card">
               <div className="stat-val stat-val-slate">{stats["not-implemented"]}</div>
-              <div className="stat-lbl">⏳ 尚未實作</div>
+              <div className="stat-lbl">
+                <HourglassIcon size={15} className="ui-icon-slate" /> 尚未實作
+              </div>
             </div>
             <div className="stat-card">
               <div className="stat-val stat-val-blue">{stats["in-progress"]}</div>
-              <div className="stat-lbl">🚀 熱血進行中</div>
+              <div className="stat-lbl">
+                <RocketIcon size={15} className="ui-icon-blue" /> 熱血進行中
+              </div>
             </div>
             <div className="stat-card">
               <div className="stat-val stat-val-emerald">{stats.completed}</div>
-              <div className="stat-lbl">✅ 完美實現</div>
+              <div className="stat-lbl">
+                <CheckCircleIcon size={15} className="ui-icon-emerald" /> 完美實現
+              </div>
             </div>
             <div className="stat-card">
               <div className="stat-val stat-val-red">{stats.missed}</div>
-              <div className="stat-lbl">🪦 錯過的遺憾</div>
+              <div className="stat-lbl">
+                <MonumentIcon size={15} className="ui-icon-red" /> 錯過的遺憾
+              </div>
             </div>
           </div>
         </div>
@@ -239,7 +313,7 @@ export default function Home() {
       {/* Control Bar: Search & Filters */}
       <section className="controls-bar">
         <div className="search-input-wrap">
-          <span className="search-icon">🔍</span>
+          <SearchIcon size={18} className="search-icon" />
           <input
             type="text"
             className="search-input"
@@ -255,13 +329,16 @@ export default function Home() {
             {DOMAIN_CATEGORIES.map((cat) => {
               const count = categoryCounts[cat.id] || 0;
               if (cat.id !== "all" && count === 0) return null;
+              const CatIcon = cat.icon;
               return (
                 <button
                   key={cat.id}
                   className={`category-tab ${selectedCategory === cat.id ? "active" : ""}`}
                   onClick={() => setSelectedCategory(cat.id)}
                 >
-                  {cat.label} <span className="cat-count">({count})</span>
+                  <CatIcon size={15} />
+                  <span>{cat.label}</span>
+                  <span className="cat-count">({count})</span>
                 </button>
               );
             })}
@@ -280,31 +357,31 @@ export default function Home() {
               className={`filter-tab tab-gold ${selectedStatus === "recorded" ? "active" : ""}`}
               onClick={() => setSelectedStatus("recorded")}
             >
-              📝 已記錄 ({stats.recorded})
+              <RecordedIcon size={14} /> <span>已記錄 ({stats.recorded})</span>
             </button>
             <button
               className={`filter-tab ${selectedStatus === "not-implemented" ? "active" : ""}`}
               onClick={() => setSelectedStatus("not-implemented")}
             >
-              ⏳ 尚未實作 ({stats["not-implemented"]})
+              <HourglassIcon size={14} /> <span>尚未實作 ({stats["not-implemented"]})</span>
             </button>
             <button
               className={`filter-tab ${selectedStatus === "in-progress" ? "active" : ""}`}
               onClick={() => setSelectedStatus("in-progress")}
             >
-              🚀 進行中 ({stats["in-progress"]})
+              <RocketIcon size={14} /> <span>進行中 ({stats["in-progress"]})</span>
             </button>
             <button
               className={`filter-tab ${selectedStatus === "completed" ? "active" : ""}`}
               onClick={() => setSelectedStatus("completed")}
             >
-              ✅ 已完成 ({stats.completed})
+              <CheckCircleIcon size={14} /> <span>已完成 ({stats.completed})</span>
             </button>
             <button
               className={`filter-tab tab-red ${selectedStatus === "missed" ? "active" : ""}`}
               onClick={() => setSelectedStatus("missed")}
             >
-              🪦 錯過 ({stats.missed})
+              <MonumentIcon size={14} /> <span>錯過 ({stats.missed})</span>
             </button>
           </div>
 
@@ -313,19 +390,19 @@ export default function Home() {
               className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
               onClick={() => setViewMode("grid")}
             >
-              🎴 卡片
+              <GridIcon size={14} /> <span>卡片</span>
             </button>
             <button
               className={`view-btn ${viewMode === "timeline" ? "active" : ""}`}
               onClick={() => setViewMode("timeline")}
             >
-              ⏳ 時間軸
+              <TimelineIcon size={14} /> <span>時間軸</span>
             </button>
             <button
               className={`view-btn ${viewMode === "table" ? "active" : ""}`}
               onClick={() => setViewMode("table")}
             >
-              📊 數據表
+              <TableIcon size={14} /> <span>數據表</span>
             </button>
           </div>
         </div>
@@ -334,7 +411,9 @@ export default function Home() {
       {/* Content Section */}
       {filteredIdeas.length === 0 ? (
         <div style={{ textAlign: "center", padding: "64px 0", color: "#64748b" }}>
-          <p style={{ fontSize: "1.2rem", marginBottom: "8px" }}>🔍 找不到符合條件的靈感</p>
+          <p style={{ fontSize: "1.2rem", marginBottom: "8px", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <SearchIcon size={20} /> 找不到符合條件的靈感
+          </p>
           <p style={{ fontSize: "0.9rem" }}>嘗試調整關鍵字或重設篩選條件</p>
         </div>
       ) : viewMode === "grid" ? (
@@ -349,8 +428,8 @@ export default function Home() {
                 <div className="card-top">
                   <span className="idea-id-badge mono">{idea.id}</span>
                   <span className={`status-pill ${statusClasses[idea.status]}`}>
-                    <span className="status-dot" />
-                    {statusLabels[idea.status]}
+                    <StatusIcon status={idea.status} size={13} />
+                    <span>{statusPlainLabels[idea.status]}</span>
                   </span>
                 </div>
 
@@ -368,7 +447,8 @@ export default function Home() {
 
               <div className="card-footer">
                 <div className="conceived-time">
-                  <span>🗓️ {idea.conceivedAt}</span>
+                  <CalendarIcon size={13} />
+                  <span>{idea.conceivedAt}</span>
                 </div>
                 {idea.demoUrl ? (
                   <a
@@ -386,7 +466,8 @@ export default function Home() {
                       gap: "4px"
                     }}
                   >
-                    🔗 線上實作 ↗
+                    <span>線上實作</span>
+                    <ArrowUpRightIcon size={13} />
                   </a>
                 ) : (
                   <span className="action-link">解構內容 →</span>
@@ -407,11 +488,11 @@ export default function Home() {
                 <div className="card-top">
                   <span className="idea-id-badge mono">{idea.id}</span>
                   <span className="conceived-time" style={{ fontSize: "0.85rem", color: "#64748b" }}>
-                    🗓️ 構思時間：{idea.conceivedAt}
+                    <CalendarIcon size={14} /> 構思時間：{idea.conceivedAt}
                   </span>
                   <span className={`status-pill ${statusClasses[idea.status]}`}>
-                    <span className="status-dot" />
-                    {statusLabels[idea.status]}
+                    <StatusIcon status={idea.status} size={13} />
+                    <span>{statusPlainLabels[idea.status]}</span>
                   </span>
                 </div>
                 <h3 className="card-title">{idea.title}</h3>
@@ -448,13 +529,14 @@ export default function Home() {
                   <td className="mono" style={{ color: "#2563eb", fontWeight: "bold" }}>
                     {idea.id}
                   </td>
-                  <td style={{ fontWeight: "700", color: "#0f172a" }}>{idea.title}</td>
+                  <td style={{ fontWeight: "700", color: "var(--text-primary)" }}>{idea.title}</td>
                   <td>
                     <span className={`status-pill ${statusClasses[idea.status]}`}>
-                      {statusLabels[idea.status]}
+                      <StatusIcon status={idea.status} size={13} />
+                      <span>{statusPlainLabels[idea.status]}</span>
                     </span>
                   </td>
-                  <td style={{ color: "#475569", maxWidth: "300px" }}>{idea.summary}</td>
+                  <td style={{ color: "var(--text-secondary)", maxWidth: "300px" }}>{idea.summary}</td>
                   <td>
                     <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
                       {idea.categories.map((c, i) => (
@@ -464,15 +546,15 @@ export default function Home() {
                       ))}
                     </div>
                   </td>
-                  <td style={{ color: "#64748b", whiteSpace: "nowrap" }}>{idea.conceivedAt}</td>
-                  <td style={{ color: "#64748b", whiteSpace: "nowrap" }}>{idea.recordedAt}</td>
+                  <td style={{ color: "var(--text-muted)", whiteSpace: "nowrap" }}>{idea.conceivedAt}</td>
+                  <td style={{ color: "var(--text-muted)", whiteSpace: "nowrap" }}>{idea.recordedAt}</td>
                   <td>
                     <button
                       onClick={() => setActiveIdea(idea)}
                       style={{
-                        background: "#eff6ff",
-                        border: "1px solid #bfdbfe",
-                        color: "#2563eb",
+                        background: "var(--color-blue-light)",
+                        border: "1px solid var(--color-blue-border)",
+                        color: "var(--color-blue)",
                         padding: "4px 12px",
                         borderRadius: "6px",
                         cursor: "pointer",
@@ -502,26 +584,26 @@ export default function Home() {
               ✕
             </button>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
               <span className="idea-id-badge mono">{activeIdea.id}</span>
               <span className={`status-pill ${statusClasses[activeIdea.status]}`}>
-                <span className="status-dot" />
-                {statusLabels[activeIdea.status]}
+                <StatusIcon status={activeIdea.status} size={13} />
+                <span>{statusPlainLabels[activeIdea.status]}</span>
               </span>
-              <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
-                🗓️ {activeIdea.conceivedAt}
+              <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <CalendarIcon size={14} /> {activeIdea.conceivedAt}
               </span>
             </div>
 
-            <h2 style={{ fontSize: "1.8rem", fontWeight: "900", color: "#0f172a", marginBottom: "12px" }}>
+            <h2 style={{ fontSize: "1.8rem", fontWeight: "900", color: "var(--text-primary)", marginBottom: "12px" }}>
               {activeIdea.title}
             </h2>
 
-            <p style={{ fontSize: "1.05rem", color: "#475569", lineHeight: "1.65", marginBottom: "20px" }}>
+            <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: "1.65", marginBottom: "20px" }}>
               {activeIdea.summary}
             </p>
 
-            <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
               {activeIdea.categories.map((c, i) => (
                 <span key={i} className="tag-pill" style={{ fontSize: "0.8rem", padding: "4px 10px" }}>
                   #{c}
@@ -532,7 +614,10 @@ export default function Home() {
             {/* Problem Section */}
             {activeIdea.problem && (
               <>
-                <div className="modal-section-title">📌 面臨問題與痛點 (Problem)</div>
+                <div className="modal-section-title">
+                  <PinIcon size={16} />
+                  <span>面臨問題與痛點 (Problem)</span>
+                </div>
                 <div className="modal-box">{activeIdea.problem}</div>
               </>
             )}
@@ -540,7 +625,10 @@ export default function Home() {
             {/* Process Section */}
             {activeIdea.process && activeIdea.process.length > 0 && (
               <>
-                <div className="modal-section-title">⚡ 運作與實作流程 (Process)</div>
+                <div className="modal-section-title">
+                  <ZapIcon size={16} />
+                  <span>運作與實作流程 (Process)</span>
+                </div>
                 <div className="modal-box">
                   <ol className="process-list">
                     {activeIdea.process.map((step, idx) => (
@@ -554,7 +642,10 @@ export default function Home() {
             {/* Benefits Section */}
             {activeIdea.benefits && activeIdea.benefits.length > 0 && (
               <>
-                <div className="modal-section-title">🎁 預期效益 (Benefits)</div>
+                <div className="modal-section-title">
+                  <GiftIcon size={16} />
+                  <span>預期效益 (Benefits)</span>
+                </div>
                 <div className="modal-box">
                   <ul className="benefit-list">
                     {activeIdea.benefits.map((benefit, idx) => (
@@ -568,7 +659,10 @@ export default function Home() {
             {/* Outcome Section */}
             {activeIdea.outcome && (
               <>
-                <div className="modal-section-title">📖 後續發展與回顧故事 (Outcome)</div>
+                <div className="modal-section-title">
+                  <BookOpenIcon size={16} />
+                  <span>後續發展與回顧故事 (Outcome)</span>
+                </div>
                 <div className={activeIdea.status === "missed" ? "outcome-callout" : "outcome-callout outcome-callout-gold"}>
                   {activeIdea.outcome}
                 </div>
@@ -578,7 +672,10 @@ export default function Home() {
             {/* Video Section */}
             {activeIdea.videoUrl && (
               <div style={{ marginTop: "24px" }}>
-                <div className="modal-section-title">🎬 展示影片與實機操作 (Video Demo)</div>
+                <div className="modal-section-title">
+                  <VideoIcon size={16} />
+                  <span>展示影片與實機操作 (Video Demo)</span>
+                </div>
                 {getYouTubeEmbedUrl(activeIdea.videoUrl) ? (
                   <div className="modal-video-wrap">
                     <iframe
@@ -596,7 +693,9 @@ export default function Home() {
                       rel="noopener noreferrer"
                       className="media-link-btn"
                     >
-                      <span>▶️ 點此觀看實機展示影片 ↗</span>
+                      <VideoIcon size={16} />
+                      <span>點此觀看實機展示影片</span>
+                      <ArrowUpRightIcon size={14} />
                     </a>
                   </div>
                 )}
@@ -606,7 +705,10 @@ export default function Home() {
             {/* Attachments Section */}
             {activeIdea.attachments && activeIdea.attachments.length > 0 && (
               <div style={{ marginTop: "24px" }}>
-                <div className="modal-section-title">📎 相關附件與專案檔案 (Attachments)</div>
+                <div className="modal-section-title">
+                  <PaperclipIcon size={16} />
+                  <span>相關附件與專案檔案 (Attachments)</span>
+                </div>
                 <div className="modal-attachments-list">
                   {activeIdea.attachments.map((att, idx) => (
                     <a
@@ -616,7 +718,9 @@ export default function Home() {
                       rel="noopener noreferrer"
                       className="attachment-btn"
                     >
-                      <span>{att.name} ↗</span>
+                      <PaperclipIcon size={14} />
+                      <span>{att.name}</span>
+                      <ArrowUpRightIcon size={13} />
                     </a>
                   ))}
                 </div>
@@ -632,12 +736,14 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="demo-link-btn"
                 >
-                  <span>🚀 前往專案線上實作頁面 ↗</span>
+                  <RocketIcon size={16} />
+                  <span>前往專案線上實作頁面</span>
+                  <ArrowUpRightIcon size={14} />
                 </a>
               </div>
             )}
 
-            <div style={{ marginTop: "32px", textAlign: "right", fontSize: "0.8rem", color: "#94a3b8" }}>
+            <div style={{ marginTop: "32px", textAlign: "right", fontSize: "0.8rem", color: "var(--text-muted)" }}>
               記錄日期：{activeIdea.recordedAt}
             </div>
           </div>
